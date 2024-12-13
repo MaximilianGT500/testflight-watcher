@@ -1,0 +1,37 @@
+{
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "cli-color": "^2.0.4",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.7"
+  },
+  "name": "testflight-watcher",
+  "version": "0.0.1",
+  "description": "Dies ist ein einfacher TestFlight-Watcher, der alle 30 Sekunden die Website auf verfügbare Plätze überprüft. Sobald ein Platz frei wird, erfolgt eine Benachrichtigung über Pushover.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "setup": "node setup.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaximilianGT500/testflight-watcher.git"
+  },
+  "keywords": [
+    "testflight",
+    "watcher",
+    "testflight-watcher",
+    "beta",
+    "beta-sniper",
+    "sniper"
+  ],
+  "author": "MaximilianGT500",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MaximilianGT500/testflight-watcher/issues"
+  },
+  "homepage": "https://github.com/MaximilianGT500/testflight-watcher#readme"
+}
