@@ -11,7 +11,7 @@ const express = require("express");
 
 const CURRENT_VERSION = "0.0.1";
 const UPDATE_CHECK_URL =
-  "https://raw.githubusercontent.com/MaximilianGT500/testflight-watcher/refs/heads/main/version.json";
+  "https://git.lunoxia.net/MaximilianGT500/testflight-watcher/raw/branch/main/version.json";
 const SETUP_FILE_NAME = process.env.SETUP_FILE_NAME || "setup.js";
 const SERVER_FILE_NAME = process.env.SERVER_FILE_NAME || "index.js";
 const USER_AGENT =
@@ -140,6 +140,10 @@ async function checkTestFlight(app, pushoverAPI) {
 
     if (betaStatus === "This beta is full.") {
       return clc.red(`❌ ${app.name}: Beta-Test ist voll.`);
+    } else if (
+      betaStatus === "This beta isn't accepting any new testers right now."
+    ) {
+      return clc.red(`❌ ${app.name}: Beta akzeptiert keine neuen Tester.`);
     } else {
       const otp = generateOTP(app.url);
       OTP_STOREAGE[app.url] = otp;
