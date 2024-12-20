@@ -184,6 +184,7 @@ async function sendPushoverNotification(userKey, appToken, title, message) {
     throw err;
   }
 }
+
 async function configureEnvironment() {
   const env = loadEnv();
   displayMessage("\n🎉 Willkommen zum Setup!\n", "info");
@@ -197,9 +198,8 @@ async function configureEnvironment() {
     },
     {
       key: "OTP_VALIDITY",
-      prompt:
-        'Gültigkeitsdauer für das OTP in Sekunden (z.B. "300" für 5 Min.)',
-      defaultValue: "300",
+      prompt: 'Gültigkeitsdauer für das OTP in Minuten (z.B. "5" für 5 Min.)',
+      defaultValue: "5 * 60 * 1000",
     },
     {
       key: "SETUP_FILE_NAME",
@@ -208,7 +208,7 @@ async function configureEnvironment() {
     },
     {
       key: "SERVER_FILE_NAME",
-      prompt: "Name der Server-Datei (Fals Du ihn angepasst hast)",
+      prompt: "Name der Server-Datei (Falls Du ihn angepasst hast)",
       defaultValue: "index.js",
     },
     {
@@ -225,7 +225,7 @@ async function configureEnvironment() {
     {
       key: "USER_AGENT",
       prompt: "User-Agent für Anfragen",
-      defaultValue: "Testflight-Watcher/0.0.1 (Monitoring Script)",
+      defaultValue: "Testflight-Watcher/0.0.2 (Monitoring Script)",
     },
     {
       key: "PUSHOVER_PRIORITY",
@@ -236,7 +236,7 @@ async function configureEnvironment() {
     {
       key: "CHECK_INTERVAL",
       prompt:
-        "In welchen Abstand soll das Script nach einen neuen Platz prüfen in Sekunden (z.B. 30)",
+        "In welchem Abstand soll das Script nach einem neuen Platz prüfen in Sekunden (z.B. 30)",
       defaultValue: "30",
     },
   ];
@@ -250,11 +250,19 @@ async function configureEnvironment() {
       continue;
     }
 
-    const currentValue = defaultValue;
+    let currentValue = defaultValue;
     const answer = await prompt(
       clc.cyan(`${question} [Standard: ${currentValue}]: `)
     );
-    env[key] = answer || currentValue;
+
+    if (key === "OTP_VALIDITY") {
+      const minutes = parseFloat(answer || "5");
+      currentValue = `${minutes} * 60 * 1000`;
+    } else {
+      currentValue = answer || currentValue;
+    }
+
+    env[key] = currentValue;
     saveEnv(env);
   }
 

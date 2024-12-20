@@ -9,21 +9,21 @@ const crypto = require("crypto");
 const path = require("path");
 const express = require("express");
 
-const CURRENT_VERSION = "0.0.1";
+const CURRENT_VERSION = "0.0.2";
 const UPDATE_CHECK_URL =
   "https://git.lunoxia.net/MaximilianGT500/testflight-watcher/raw/branch/main/version.json";
 const SETUP_FILE_NAME = process.env.SETUP_FILE_NAME || "setup.js";
 const SERVER_FILE_NAME = process.env.SERVER_FILE_NAME || "index.js";
 const USER_AGENT =
-  process.env.USER_AGENT || "Testflight-Watcher/0.0.1 (Monitoring Script)";
+  process.env.USER_AGENT || "Testflight-Watcher/0.0.2 (Monitoring Script)";
 const OTP_SECRET = process.env.OTP_SECRET || "AendereDiesenString";
-const OTP_VALIDITY = process.env.OTP_VALIDITY || "300";
+const OTP_VALIDITY = process.env.OTP_VALIDITY || "5 * 60 * 1000";
 const PORT = process.env.PORT || "3000";
 const HTTP_URL = process.env.HTTP_URL || `http://localhost:${PORT}`;
 const PUSHOVER_PRIORITY = process.env.PUSHOVER_PRIORITY || `1`;
 const CHECK_INTERVAL = process.env.CHECK_INTERVAL || `30`;
 let TESTFLIGHT_URLS = [];
-let OTP_STOREAGE = {};
+let OTP_STORAGE = {};
 
 function loadConfig() {
   if (!fs.existsSync(".env")) {
@@ -146,7 +146,7 @@ async function checkTestFlight(app, pushoverAPI) {
       return clc.red(`❌ ${app.name}: Beta akzeptiert keine neuen Tester.`);
     } else {
       const otp = generateOTP(app.url);
-      OTP_STOREAGE[app.url] = otp;
+      OTP_STORAGE[app.url] = otp;
       await sendPushoverNotification(
         pushoverAPI,
         `🎉 TestFlight Beta verfügbar für ${app.name}!`,
@@ -176,7 +176,7 @@ async function sendPushoverNotification(pushoverAPI, title, message) {
 }
 
 function generateOTP(url) {
-  const timeWindow = Math.floor((Date.now() / OTP_VALIDITY) * 1000);
+  const timeWindow = Math.floor(Date.now() / OTP_VALIDITY);
   return crypto
     .createHmac("sha256", OTP_SECRET)
     .update(`${timeWindow}-${url}`)
@@ -185,15 +185,15 @@ function generateOTP(url) {
 }
 
 function verifyOTP(otp, url) {
-  const timeWindow = Math.floor((Date.now() / OTP_VALIDITY) * 1000);
+  const timeWindow = Math.floor(Date.now() / OTP_VALIDITY);
   const validOTP = crypto
     .createHmac("sha256", OTP_SECRET)
     .update(`${timeWindow}-${url}`)
     .digest("hex")
     .slice(0, 6);
 
-  if (otp === validOTP && OTP_STOREAGE[url] === otp) {
-    delete OTP_STOREAGE[url];
+  if (otp === validOTP && OTP_STORAGE[url] === otp) {
+    delete OTP_STORAGE[url];
     return true;
   }
   return false;

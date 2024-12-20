@@ -8,7 +8,7 @@
     "nodemon": "^3.1.7"
   },
   "name": "testflight-watcher",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dies ist ein einfacher TestFlight-Watcher, der alle 30 Sekunden die Website auf verfügbare Plätze überprüft. Sobald ein Platz frei wird, erfolgt eine Benachrichtigung über Pushover.",
   "main": "index.js",
   "scripts": {
